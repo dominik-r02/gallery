@@ -63,7 +63,7 @@ export default function () {
       meta.value = response.meta || meta.value
     } catch (e: any) {
       error.value =
-        e.statusMessage || 'Wystąpił bład podczas pobierania komentarzy.'
+        e.statusMessage || 'Wystąpił błąd podczas pobierania komentarzy.'
     } finally {
       isFetchingMore.value = false
     }
