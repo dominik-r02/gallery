@@ -5,17 +5,15 @@ const route = useRoute()
 // Pozwala wyświetlać nowsze zdjęcia z serwisu, zachowując kanoniczne ID używane
 // w routingu oraz w pliku comments.json.
 const PICSUUM_IDS = {
-  '1': '1015',
-  '2': '1062'
+  1: '1015',
+  2: '1062',
 }
 
 // Identyfikator zdjęcia pobierany z parametru ścieżki (widoczny dla kandydata).
 const photoId = computed(() => String(route.params.id))
 
 // Wewnętrzny identyfikator używany do budowania adresów w picsum.photos.
-const picsumId = computed(
-  () => PICSUUM_IDS[photoId.value] ?? photoId.value
-)
+const picsumId = computed(() => PICSUUM_IDS[photoId.value] ?? photoId.value)
 
 // Adres zdjęcia z picsum.photos — stały rozmiar dla spójnego layoutu.
 const photoUrl = computed(
@@ -28,7 +26,7 @@ const photoInfoUrl = computed(
 )
 
 useHead(() => ({
-  title: `Zdjęcie ${photoId.value}`
+  title: `Zdjęcie ${photoId.value}`,
 }))
 </script>
 
@@ -62,13 +60,6 @@ useHead(() => ({
       - zadbaj o stany: ładowanie, błąd, brak komentarzy
       ===========================================================================
     -->
-    <section class="bg-white border border-dashed border-gray-300 rounded-xl p-6 sm:p-8 text-center">
-      <h2 class="text-lg font-semibold mb-2 mt-0">Komentarze</h2>
-      <p class="text-gray-500 m-0">
-        Tutaj kandydat powinien zaimplementować pobieranie i wyświetlanie
-        komentarzy z
-        <code class="bg-gray-100 px-1.5 py-0.5 rounded text-sm">/api/comments.json</code>.
-      </p>
-    </section>
+    <CommentsSection :photo-id="photoId" />
   </section>
 </template>
