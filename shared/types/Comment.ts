@@ -6,3 +6,14 @@ export type Comment = {
   content: string
   createdAt: string
 }
+
+export type CommentsMeta = {
+  total: number
+  count: number
+  hasMore: boolean
+}
+
+export type CommentsResponse = {
+  data: Comment[]
+  meta: CommentsMeta
+}

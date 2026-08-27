@@ -1,5 +1,7 @@
 import type { Comment } from '~~/shared/types/Comment'
 
+const DEFAULT_LIMIT = 5
+
 export default defineCachedEventHandler(
   async (event) => {
     const rawId = getRouterParam(event, 'id')
@@ -13,9 +15,17 @@ export default defineCachedEventHandler(
     }
 
     const query = getQuery(event)
+
     const parsedLimit = Number(query.limit)
     const limit =
-      !Number.isNaN(parsedLimit) && parsedLimit > 0 ? parsedLimit : 5
+      !Number.isNaN(parsedLimit) && parsedLimit > 0
+        ? parsedLimit
+        : DEFAULT_LIMIT
+
+    const parsedOffset = Number(query.offset)
+    const offset =
+      !Number.isNaN(parsedOffset) && parsedOffset >= 0 ? parsedOffset : 0
+
     const sortDir = query.sort === 'asc' ? 'asc' : 'desc'
 
     try {
@@ -29,27 +39,23 @@ export default defineCachedEventHandler(
         })
       }
 
-      let filteredComments = comments.filter(
-        (comment) => Number(comment.photoId) === photoId
-      )
-
-      filteredComments = filteredComments.sort((a, b) => {
-        const timeA = new Date(a.createdAt).getTime()
-        const timeB = new Date(b.createdAt).getTime()
-        return sortDir === 'desc' ? timeB - timeA : timeA - timeB
-      })
+      const filteredComments = comments
+        .filter((comment) => Number(comment.photoId) === photoId)
+        .sort((a, b) => {
+          const timeA = new Date(a.createdAt).getTime()
+          const timeB = new Date(b.createdAt).getTime()
+          return sortDir === 'desc' ? timeB - timeA : timeA - timeB
+        })
 
       const totalCount = filteredComments.length
-      if (limit && limit > 0) {
-        filteredComments = filteredComments.slice(0, limit)
-      }
+      const pageComments = filteredComments.slice(offset, offset + limit)
 
       return {
-        data: filteredComments,
+        data: pageComments,
         meta: {
           total: totalCount,
-          count: filteredComments.length,
-          hasMore: totalCount > filteredComments.length,
+          count: offset + pageComments.length,
+          hasMore: offset + pageComments.length < totalCount,
         },
       }
     } catch (error: unknown) {
@@ -67,7 +73,7 @@ export default defineCachedEventHandler(
     getKey: (event) => {
       const id = getRouterParam(event, 'id')
       const query = getQuery(event)
-      return `${id}-${query.limit || 'all'}-${query.sort || 'desc'}`
+      return `${id}-${query.offset || 0}-${query.limit || DEFAULT_LIMIT}-${query.sort || 'desc'}`
     },
   }
 )

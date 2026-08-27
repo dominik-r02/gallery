@@ -22,12 +22,41 @@
         :key="comment.id"
         :comment="comment"
       />
+
+      <div
+        v-if="meta.hasMore"
+        class="mt-8 text-center border-t border-gray-100 pt-6"
+      >
+        <button
+          @click="loadMoreComments(photoId)"
+          :disabled="isFetchingMore"
+          class="font-semibold text-sm text-brand hover:-translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+        >
+          <Icon
+            v-if="isFetchingMore"
+            name="lucide:loader-2"
+            class="size-4 animate-spin text-brand"
+          />
+          <span class="flex gap-2" v-else
+            >Załaduj starsze komentarze
+            <Icon class="size-5" name="material-symbols:arrow-downward-alt"
+          /></span>
+        </button>
+      </div>
     </template>
   </section>
 </template>
 
 <script setup lang="ts">
-const { comments, getComments, isLoading, error, meta } = useComments()
+const {
+  comments,
+  getComments,
+  loadMoreComments,
+  isLoading,
+  isFetchingMore,
+  error,
+  meta,
+} = useComments()
 
 const { photoId } = defineProps<{
   photoId: string
