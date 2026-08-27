@@ -1,4 +1,4 @@
-import type { Comment } from '~~/server/types/Comment'
+import type { Comment } from '~~/shared/types/Comment'
 
 export default defineCachedEventHandler(
   async (event) => {
